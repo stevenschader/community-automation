@@ -17,8 +17,9 @@
   # if there is more than 1 rollback, pick the most recent
 
   - name: Find Rollback WebSphere Product Version
-    ansible.builtin.shell:
-      "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | grep {{ im_package_id }}|awk -F ' : ' '{print $2}'|awk -F ',' '{print $1}'"
+    ansible.builtin.shell: 
+      "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | grep {{ im_package_id }}"
+
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0 ] )
     changed_when: false
