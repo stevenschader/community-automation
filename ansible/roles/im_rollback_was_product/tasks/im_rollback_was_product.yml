@@ -9,7 +9,11 @@
     failed_when: isimcl.stat.exists == False
 
   - name:  Rollback WebSphere Product
+<<<<<<< HEAD
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ was_product_dir }}"
+=======
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }}"
+>>>>>>> fad09ec4 (rollback)
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0, 1 ] )
 
