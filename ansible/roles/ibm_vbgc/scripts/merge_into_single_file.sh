@@ -2,6 +2,8 @@
 # locate valid Liberty IBM and Oracle Jdk verbose gc files
 find . -name verbosegc* > fileList.txt
 find . -name verboseGC* >> fileList.txt
+# z/OS verboseGC files ends with SYSOUT.txt
+find . -name *SYSOUT.txt >> fileList.txt
 gcdir=""
 prevgcdir=""
 
