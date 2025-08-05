@@ -12,7 +12,7 @@
     state: latest
   vars:
     packages:
-    - podman
+      - podman
 
 - name: Check if user is lingering
   ansible.builtin.stat:
@@ -50,7 +50,7 @@
     path: '.config/containers/'
     state: directory
     mode: '0755'
-    
+
 # RHEL10 does not have slirp4netns installation packages, so we cannot override the podman 5.x pasta networking with slirp4netns
 # - name: Override podman 5.x pasta networking with slirp4netns
 #   ansible.builtin.blockinfile:
@@ -127,4 +127,3 @@
 
 # - ansible.builtin.debug:
 #    msg: '{{ svtop }}'
-

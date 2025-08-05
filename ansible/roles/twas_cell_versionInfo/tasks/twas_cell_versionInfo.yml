@@ -50,6 +50,37 @@
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0444'
 
+  - name: Check if MoRE installed
+    ansible.builtin.stat:
+      path: "{{ install_base }}/{{ app_dir }}/properties/version/MORE.product"
+    register: ismore
+
+  - name: MORE versions
+    when: ismore.stat.exists
+    block:
+
+    - name: Read the MORE.product xml file
+      ansible.builtin.include_role:
+        name: twas_cell_product_version_level
+      vars:
+        twas_product: MORE
+        target_dir: "{{ twas_dir }}"
+        staging_json_file: "more_{{ version_level_json_file }}"
+
+    - name: Merge the Server / MoRE json ( combined )
+      delegate_to: localhost
+      when: istwas.stat.exists
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/more_{{ version_level_json_file }}') | from_json, recursive=True, list_merge='append' )}}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+        mode: '0444'
+    
+    - name: Remove the more_{{ version_level_json_file }}
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/more_{{ version_level_json_file }}"
+        state: absent
+
 - name: Check if AppClient installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
