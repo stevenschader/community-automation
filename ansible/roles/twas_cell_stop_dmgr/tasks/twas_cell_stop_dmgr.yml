@@ -19,12 +19,14 @@
     - name: Stop the started dmgr
       when: '"STARTED" in statusDmgroutput.stdout'
       block:  
-      - name: Stop the dmgr
-        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager{{ ext }} -username {{ twas_username }} -password {{ twas_password }}"
-        register: stopManagerOutput
-        failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
-      - name: stopManagerOutput
-        debug:
-          msg: "{{ stopManagerOutput.stdout_lines }}"
-        failed_when: 
-          - '" Error " in stopManagerOutput.stdout'
+        - name: Stop the dmgr
+          shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager{{ ext }} -username {{ twas_username }} -password {{ twas_password }}"
+          register: stopManagerOutput
+          failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
+          timeout: 300
+
+        - name: stopManagerOutput
+          debug:
+            msg: "{{ stopManagerOutput.stdout_lines }}"
+          failed_when: 
+            - '" Error " in stopManagerOutput.stdout'

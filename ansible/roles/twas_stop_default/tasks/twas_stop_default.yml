@@ -19,6 +19,7 @@
       register: stopDefaultOutput
       failed_when: ( stopDefaultOutput.rc not in [ 0,246 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
+      timeout: 300
 
     - name: stopDefaultOutput
       ansible.builtin.debug:

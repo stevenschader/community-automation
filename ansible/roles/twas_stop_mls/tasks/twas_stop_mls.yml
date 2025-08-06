@@ -51,6 +51,7 @@
       register: stopMlsOutput
       failed_when: ( stopMlsOutput.rc not in [ 0,105 ] )
       with_items: '{{ mls }}'
+      timeout: 300
 
     - name: ManagedLibertyServer stop output
       ansible.builtin.debug:
