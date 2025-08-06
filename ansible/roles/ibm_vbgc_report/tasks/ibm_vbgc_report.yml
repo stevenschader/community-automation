@@ -17,10 +17,8 @@
         chdir: "{{ vbgc_report_dir }}"
       register: lineplotoutput
       changed_when: false
-
-    - name: Verbose gc line plot files output
-      ansible.builtin.debug:
-        msg: "{{ lineplotoutput.stdout_lines }}"
+      ignore_errors: true
+      no_log: true
 
     - name: Find all the verbosegc index.html ( indicates data )
       delegate_to: localhost
@@ -29,16 +27,22 @@
         chdir: "{{ vbgc_report_dir }}"
       register: indexhtmloutput
       changed_when: false
-
-    - name: Verbose gc index.html files output
-      ansible.builtin.debug:
-        msg: "{{ indexhtmloutput.stdout_lines }}"
+      ignore_errors: true
+      no_log: true
 
     - name: Any vbgc line plots?
       when:
         - lineplotoutput.stdout | length > 0
         - indexhtmloutput.stdout | length > 0
       block:
+
+        - name: Verbose gc line plot files output
+          ansible.builtin.debug:
+            msg: "{{ lineplotoutput.stdout_lines }}"
+            
+        - name: Verbose gc index.html files output
+          ansible.builtin.debug:
+            msg: "{{ indexhtmloutput.stdout_lines }}"
 
         - name: Copy gcmv_single_report.html.j2
           delegate_to: localhost
