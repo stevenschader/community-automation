@@ -6,6 +6,7 @@
     ansible.builtin.template:
       src: "im_upgrade_twas_more_{{ twas_release }}.xml.j2"
       dest: "im_was_upgrade.xml"
+      mode: '0644'
 
   - name: Upgrade tWAS MoRE product
     ansible.builtin.include_role:
