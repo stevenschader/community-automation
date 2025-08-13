@@ -1,5 +1,6 @@
 ---
 - name: Remove previous combined json
+  delegate_to: localhost
   ansible.builtin.file:
     path: "{{ json_path }}/{{ json_file }}"
     state: absent
