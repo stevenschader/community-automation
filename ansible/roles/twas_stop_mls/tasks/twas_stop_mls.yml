@@ -21,7 +21,7 @@
         mode: '0755'
 
     - name: List the running ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -conntype none -f list_mls.jy"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython  -f list_mls.jy"
       register: serverListOutput
 
     # - name: Debug serverListOutput
