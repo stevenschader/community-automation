@@ -35,22 +35,8 @@
           command: "jmeter_json_payload.sh"
         register: jmeterStatus
 
-      - name: Try parsing JSON to check validity
-        set_fact:
-          parsed_json: "{{ jmeterStatus | from_json }}"
-        failed_when: false
-        ignore_errors: true
-        no_log: false
-
-      - name: Jmeter debug
-        ansible.builtin.debug:
-          msg: "{{ parsed_json }}"
-        ignore_errors: true
-        no_log: false
-        failed_when: false
-
       - name: Handle invalid JSON
-        when: parsed_json is not defined
+        when: jmeterStatus is not search('latestTimestamp')
         block:
 
           - name: Jmeter status is not valid JSON
@@ -61,7 +47,7 @@
               mode: '0444'
 
       - name: Jmeter status is valid JSON
-        when: parsed_json is defined
+        when: jmeterStatus is search('latestTimestamp')
         block:
 
           - name: Add the hostname to the status
