@@ -35,15 +35,14 @@
   register: getMaintenanceModeOutput
   failed_when: ( getMaintenanceModeOutput.rc not in [ 0, 255 ] )
 
+- name: Set maint status boolean false
+  ansible.builtin.set_fact:
+    server_maint_status: false
+
 - name: Set maint status boolean true
   when: getMaintenanceModeOutput.stdout is search('is in maintenance mode')
   ansible.builtin.set_fact:
     server_maint_status: true
-
-- name: Set maint status boolean false
-  when: getMaintenanceModeOutput.stdout is search('is not in maintenance mode')
-  ansible.builtin.set_fact:
-    server_maint_status: false
 
 - name: Create status dir
   delegate_to: localhost
