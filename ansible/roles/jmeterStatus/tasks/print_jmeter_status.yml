@@ -49,7 +49,7 @@
           - name: Jmeter status is not valid JSON
             delegate_to: localhost
             ansible.builtin.template:
-              src: container_status_invalid.json.j2
+              src: container_status_notrunning.json.j2
               dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
               mode: '0444'
 
