@@ -40,7 +40,14 @@
           parsed_json: "{{ jmeterStatus | from_json }}"
         failed_when: false
         ignore_errors: true
-        no_log: true
+        no_log: false
+
+      - name: Jmeter debug
+        ansible.builtin.debug:
+          msg: "{{ parsed_json }}"
+        ignore_errors: true
+        no_log: false
+        failed_when: false
 
       - name: Handle invalid JSON
         when: parsed_json is not defined
