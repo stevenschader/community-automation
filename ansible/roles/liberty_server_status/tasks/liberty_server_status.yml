@@ -35,14 +35,15 @@
   register: getMaintenanceModeOutput
   failed_when: ( getMaintenanceModeOutput.rc not in [ 0, 255 ] )
 
-- name: Number of stdout_lines
-  delegate_to: localhost
+- name: Set maint status boolean true
+  when: getMaintenanceModeOutput.stdout is search('is in maintenance mode')
   ansible.builtin.set_fact:
-    line_count: "{{ getMaintenanceModeOutput.stdout_lines | length }}"
+    server_maint_status: true
 
-- name: Set status facts
+- name: Set maint status boolean false
+  when: getMaintenanceModeOutput.stdout is not search('is not in maintenance mode')
   ansible.builtin.set_fact:
-    server_maint_status: '{{ getMaintenanceModeOutput.stdout_lines[line_count|int -1] | trim }}'
+    server_maint_status: false
 
 - name: Create status dir
   delegate_to: localhost
@@ -50,10 +51,18 @@
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
     state: directory
     mode: '0755'
-
+# check getMaintenanceModeOutput.stdout_lines  and convert to true if this string is found
+    # 'Server is not in maintenance mode.'
+    # 'Server is in maintenance mode.'
+- name: Create status json file
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+    status_json_file: "server_status_{{ wl_server }}.json" 
+    # status_json_file: "server_status_{{ wl_server }}_{{ ansible_date_time.iso8601 }}.json"  
+    
 - name: Create list with server name / status
   ansible.builtin.set_fact:
-    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": wl_server, "status": server_status, "maint_mode": server_maint_status } ] }}'
+    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": wl_server, "status": server_status, "maint_mode": server_maint_status|bool } ] }}'
 
 - name: New dict server status
   ansible.builtin.set_fact:
