@@ -51,14 +51,6 @@
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
     state: directory
     mode: '0755'
-# check getMaintenanceModeOutput.stdout_lines  and convert to true if this string is found
-    # 'Server is not in maintenance mode.'
-    # 'Server is in maintenance mode.'
-- name: Create status json file
-  delegate_to: localhost
-  ansible.builtin.set_fact:
-    status_json_file: "server_status_{{ wl_server }}.json" 
-    # status_json_file: "server_status_{{ wl_server }}_{{ ansible_date_time.iso8601 }}.json"  
     
 - name: Create list with server name / status
   ansible.builtin.set_fact:
