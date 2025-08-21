@@ -15,9 +15,14 @@ do
         prevgcdir=$gcdir
         cd $gcdir
         # check to see if there are more than 1 gc file
-        read countgc _ _ <<< $(ls -1 verbose* | wc)
+        if ls -1 | grep -q SYSOUT; then
+           vbgcfile='*SYSOUT.txt'
+        else
+           vbgcfile='verbose*'
+        fi
+        read countgc _ _ <<< $(ls -1 $vbgcfile | wc)
         if [ "$countgc" -gt "1" ] ; then
-            list=$(ls -1 verbose*)
+            list=$(ls -1 $vbgcfile)
             params=" "
             while read gcfile
                 do
