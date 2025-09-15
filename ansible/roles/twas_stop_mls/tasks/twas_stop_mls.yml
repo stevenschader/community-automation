@@ -63,6 +63,5 @@
       - '" Error " in item.stdout'
   rescue:
     - ansible.builtin.include_role:
-        name: linux_kill_process
-      vars:
-        linux_kill_process: "{{ linux_kill_process }}"
+        name: was_kill_process
+

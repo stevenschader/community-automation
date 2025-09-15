@@ -26,3 +26,17 @@
       ignore_errors: true
       ansible.builtin.shell: "kill -9 {{ item }}"
       with_items: "{{ WsServer_processes.results | select('failed') | map(attribute='item') | list }}"
+
+- name: Windoze reboot system
+  when: ansible_system is search('CYG')
+  block:
+    - name: Reboot Windows manually
+      ansible.builtin.shell: shutdown /r /t 0
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+    - name: Wait for system to come back online
+      ansible.builtin.wait_for_connection:
+        timeout: 600
+        delay: 30
