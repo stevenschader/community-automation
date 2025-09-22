@@ -1,7 +1,7 @@
 ---
 - name: Any logs?
   ansible.builtin.stat:
-    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" #Testing if the logs directory is empty.
   register: islogs
 
 - name: Log archive logic
