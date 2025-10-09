@@ -7,7 +7,7 @@
       register: retrieveSignersOutput
       failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
     - name: retrieveSignersOutput
-      debug:
+      ansible.builtin.debug:
         msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
     - name: Copy create_mls.jy

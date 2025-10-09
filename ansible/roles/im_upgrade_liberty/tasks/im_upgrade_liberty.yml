@@ -1,5 +1,6 @@
 ---
 - name: Zip up the current folder
+  when: more_enabled is not defined
   community.general.archive:
     path: "{{ wlp_usr_dir }}/*"
     dest: "{{ install_base }}/{{ ansible_hostname }}.liberty_usr.save.zip"
