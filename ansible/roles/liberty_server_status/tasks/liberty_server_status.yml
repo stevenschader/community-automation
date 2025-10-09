@@ -20,29 +20,31 @@
 
 # server is not in maintenance mode.
 # server is in maintenance mode.
-
-- name: Check server maintenance status
-  ansible.builtin.shell:
-    "{{ install_base }}/{{ liberty_dir }}/bin/collective getMaintenanceMode \
-    --host={{ cc_hostname }} \
-    --port={{ liberty_admin_ports }} \
-    --user={{ liberty_admin_user }} \
-    --password={{ liberty_admin_pass }} \
-    --hostName={{ ansible_fqdn }} \
-    --usrDir={{ cygwin }}{{ wlp_usr_dir }} \
-    --server={{ wl_server }} \
-    --autoAcceptCertificates"
-  register: getMaintenanceModeOutput
-  failed_when: ( getMaintenanceModeOutput.rc not in [ 0, 255 ] )
-
 - name: Set maint status boolean false
   ansible.builtin.set_fact:
     server_maint_status: false
 
-- name: Set maint status boolean true
-  when: getMaintenanceModeOutput.stdout is search('is in maintenance mode')
-  ansible.builtin.set_fact:
-    server_maint_status: true
+- name: Is cc_hostname defined?
+  when: cc_hostname is defined
+  block:
+  - name: Check server maintenance status
+    ansible.builtin.shell:
+      "{{ install_base }}/{{ liberty_dir }}/bin/collective getMaintenanceMode \
+      --host={{ cc_hostname }} \
+      --port={{ liberty_admin_ports }} \
+      --user={{ liberty_admin_user }} \
+      --password={{ liberty_admin_pass }} \
+      --hostName={{ ansible_fqdn }} \
+      --usrDir={{ cygwin }}{{ wlp_usr_dir }} \
+      --server={{ wl_server }} \
+      --autoAcceptCertificates"
+    register: getMaintenanceModeOutput
+    failed_when: ( getMaintenanceModeOutput.rc not in [ 0, 255 ] )
+
+  - name: Set maint status boolean true
+    when: getMaintenanceModeOutput.stdout is search('is in maintenance mode')
+    ansible.builtin.set_fact:
+      server_maint_status: true
 
 - name: Create status dir
   delegate_to: localhost
