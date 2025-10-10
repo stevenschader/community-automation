@@ -78,7 +78,7 @@
 # - ansible.builtin.debug:
 #    msg: '{{ svtop }}'
 
-- name: Create dbdir directory
+- name: Create svt_db_dir directory
   become: true
   ansible.builtin.file:
     path: "{{ item }}"
@@ -86,7 +86,7 @@
   with_items:
     - "/home/{{ ansible_user }}/{{ svt_db_dir }}"
 
-- name: Create dbdir directory
+- name: Create svt_db_dir directory
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory

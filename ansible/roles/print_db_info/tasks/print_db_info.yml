@@ -13,9 +13,9 @@
     #   register: dbinfo
 
     # the db2ls.info file is new, and prob not on all the target dbs yet
-    - name: Check if dbdir/backup/db2ls.info exists
+    - name: Check if svt_db_dir/backup/db2ls.info exists
       ansible.builtin.stat:
-        path: dbdir/backup/db2ls.info
+        path: "{{ svt_db_dir }}/backup/db2ls.info"
       register: isdb2ls
 
     - name: Block for db2ls.info
@@ -25,7 +25,7 @@
         # /opt/ibm/db2/V12.1:12.1.1.0:0 ::Tue Feb  4 22:54:29 2025 UTC :0 
         - name: Slurp the db2ls.info file
           ansible.builtin.slurp: 
-            src: ~/dbdir/backup/db2ls.info
+            src: "~/{{ svt_db_dir }}/backup/db2ls.info"
           register: output
 
         - name: Do some regex
