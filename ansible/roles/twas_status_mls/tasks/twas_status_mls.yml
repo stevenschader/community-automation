@@ -7,7 +7,7 @@
       register: retrieveSignersOutput
       failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
     - name: retrieveSignersOutput
-      debug:
+      ansible.builtin.debug:
         msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
     # bin/wsadmin.sh -username persona1 -password ppersona1 -c "AdminTask.listServers('[-serverType MANAGED_LIBERTY_SERVER -nodeName node1]')"
@@ -59,7 +59,5 @@
       with_items: "{{ statusMlsOutput.results }}"
       loop_control:
         label: "{{ item.stdout }}"
-      failed_when: 
+      failed_when:
       - '" Error " in item.stdout'
-
-
