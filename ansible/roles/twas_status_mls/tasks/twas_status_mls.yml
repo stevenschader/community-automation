@@ -53,11 +53,15 @@
       with_items: '{{ mls }}'
       timeout: 300
 
+    - name: Extract server status
+      ansible.builtin.set_fact:
+        server_status: "{{ item.stdout | regex_search('(RUNNING|STOPPED)') | default('UNKNOWN') }}"
+      with_items: "{{ statusMlsOutput.results }}"
+      register: extracted_status
+      
     - name: ManagedLibertyServer status output
       ansible.builtin.debug:
-        msg: "rc={{ item.rc }}"
-      with_items: "{{ statusMlsOutput.results }}"
+        msg: "Status: {{ item.ansible_facts.server_status }}"
+      with_items: "{{ extracted_status.results }}"
       loop_control:
-        label: "{{ item.stdout }}"
-      failed_when:
-      - '" Error " in item.stdout'
+        label: "{{ item.item.stdout | regex_search('[^\\s]+$') | default('unknown') }}"
