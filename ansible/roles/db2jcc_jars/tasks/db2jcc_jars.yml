@@ -14,13 +14,13 @@
 
 - name: check container db2 for db2jcc jars
   stat:
-   path: "~/dbdir/backup/db2jcc4.jar"
+   path: "~/{{ svt_db_dir }}/backup/db2jcc4.jar"
   register: container
 
 - block:
   - name: fetch db2jcc4.jar
     fetch:
-      src: ~/dbdir/backup/db2jcc4.jar
+      src: ~/{{ svt_db_dir }}/backup/db2jcc4.jar
       dest: /tmp/db2jcc4.jar
       flat: yes
   when: container.stat.exists == True

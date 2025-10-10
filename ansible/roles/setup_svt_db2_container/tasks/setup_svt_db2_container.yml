@@ -84,14 +84,14 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "/home/{{ ansible_user }}/dbdir"
+    - "/home/{{ ansible_user }}/{{ svt_db_dir }}"
 
 - name: Create dbdir directory
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "/home/{{ ansible_user }}/dbdir"
+    - "/home/{{ ansible_user }}/{{ svt_db_dir }}"
 
 - name: kill rm any existing db2 container
   containers.podman.podman_container:
@@ -117,7 +117,7 @@
     ports:
       - "50000:50000"
     volume:
-      - "/home/{{ ansible_user }}/dbdir:/database"
+      - "/home/{{ ansible_user }}/{{ svt_db_dir }}:/database"
     cmd_args:
       - "-e LICENSE=accept"
       - "-e DB2INST1_PASSWORD={{ db_pass }}"
