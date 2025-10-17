@@ -39,7 +39,7 @@
   when: ansible_system is not search('CYG')
   block:
   - name: Stop any httpd proccess gracefully
-    when: isihs.stat.exists == True
+    when: isihs.stat.exists
     block: 
     - name:  stop httpd
       ignore_errors: true
@@ -61,7 +61,7 @@
   register: iswct
 
 - name: Uninstall WCT WAS90
-  when: iswct.stat.exists == True
+  when: iswct.stat.exists
   block:
   - name:  uninstall wct WAS90
     ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ wct_dir }}"
@@ -91,7 +91,7 @@
   register: isplg
 
 - name: Uninstall plugin
-  when: isplg.stat.exists == True
+  when: isplg.stat.exists
   block:
   - name:  uninstall plugin WAS90
     ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}"
@@ -121,7 +121,7 @@
   register: isihs
 
 - name: Uninstall IHS WAS90
-  when: isihs.stat.exists == True
+  when: isihs.stat.exists
   block:
   - name:  Uninstall http WAS90
     ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}"

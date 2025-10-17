@@ -14,7 +14,7 @@
   - name: Instana start
     debug:
      msg: "{{ istart.stdout_lines }}"
-  when: isInstana.stat.exists == True
+  when: isInstana.stat.exists
 
 - name: check if instana normal is installed
   stat:
@@ -31,4 +31,4 @@
   - name: Instana start
     debug:
      msg: "{{ istart.stdout_lines }}"
-  when: isInstana.stat.exists == True
+  when: isInstana.stat.exists

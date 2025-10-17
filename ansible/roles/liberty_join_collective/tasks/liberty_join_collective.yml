@@ -11,7 +11,7 @@
   - name:  stop existing server process
     ignore_errors: true
     ansible.builtin.shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
-    when: iscc.stat.exists == True
+    when: iscc.stat.exists
     register: op
 
   - ansible.builtin.debug:

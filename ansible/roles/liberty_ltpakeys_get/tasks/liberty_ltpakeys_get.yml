@@ -10,5 +10,5 @@
       src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
       dest: /tmp/ltpa.keys
       flat: yes
-  when: onprem.stat.exists == True
+  when: onprem.stat.exists
 

@@ -1,11 +1,30 @@
 ---
+
+# ok: [nest-lib-dt10-cc.fyre.ibm.com] => {
+#     "changed": false,
+#     "invocation": {
+#         "module_args": {
+#             "checksum_algorithm": "sha1",
+#             "follow": false,
+#             "get_attributes": true,
+#             "get_checksum": true,
+#             "get_md5": false,
+#             "get_mime": true,
+#             "path": "/home/nest/usr/servers/cc/logs/*"
+#         }
+#     },
+#     "stat": {
+#         "exists": false
+#     }
+# }
+## removing the * below becuase the check is always false even if the dir exitst, and there are files in the dir
 - name: Any logs?
   ansible.builtin.stat:
-    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" #Testing if the logs directory is empty.
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs" #Testing if the logs directory is empty.
   register: islogs
 
 - name: Log archive logic
-  when: islogs.stat.exists == True
+  when: islogs.stat.exists
   block: 
     - name: archive the liberty logs dir to fetch
       ignore_errors: true # ignore errors, if there are a lot of errors the logs will rollover causing the archive to fail

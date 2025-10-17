@@ -8,7 +8,7 @@
 - name: Uninstall MoRE Liberty
   when:
     - isim.stat is defined
-    - isim.stat.exists == True
+    - isim.stat.exists
   block:
 
   - name: Check if previous MoRE installed

@@ -61,4 +61,4 @@
      backup: yes
      mode: '0644'
     become: true
-  when: isjava.stat.exists == False or forceReplace|bool == True
+  when: isjava.stat.exists == False or forceReplace|bool

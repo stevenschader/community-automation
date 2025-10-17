@@ -5,7 +5,7 @@
   register: isconfig
 
 - name: Config archive logic
-  when: isconfig.stat.exists == True
+  when: isconfig.stat.exists
   block: 
   - name: Archive the liberty config files to fetch
     community.general.archive:

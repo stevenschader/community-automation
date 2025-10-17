@@ -19,7 +19,7 @@
     - name: Stop existing controller process
       ignore_errors: true
       ansible.builtin.shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
-      when: iscc.stat.exists == True
+      when: iscc.stat.exists
       register: op
 
     - name: Stop existing controller process output

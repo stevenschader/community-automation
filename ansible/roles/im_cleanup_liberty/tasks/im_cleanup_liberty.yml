@@ -8,7 +8,7 @@
 - name: Uninstall Liberty
   when:
     - islib.stat is defined
-    - islib.stat.exists == True
+    - islib.stat.exists
   block:
   - name:  Stop any running servers
     ignore_errors: true

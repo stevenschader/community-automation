@@ -12,7 +12,7 @@
       ansible.builtin.file:
         path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
         state: absent
-      when: islog.stat.exists == True
+      when: islog.stat.exists
 
 - name: Remove IHS logs directory
   when: 
@@ -27,13 +27,13 @@
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
         state: absent
-      when: islog.stat.exists == True
+      when: islog.stat.exists
     - name: ReCreate IHS logs directory
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
         state: directory
         mode: 0755
-      when: islog.stat.exists == True
+      when: islog.stat.exists
 
 - name: Remove Plugin logs directory
   when: 
@@ -49,13 +49,13 @@
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
         state: absent
-      when: islog.stat.exists == True
+      when: islog.stat.exists
     - name: ReCreate Plugin logs directory
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
         state: directory
         mode: 0755
-      when: islog.stat.exists == True
+      when: islog.stat.exists
 
 - name: Any extra logs?
   when: extra_logs is defined

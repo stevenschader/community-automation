@@ -10,7 +10,7 @@
       src: ~/sqllib/java/db2jcc4.jar
       dest: /tmp/db2jcc4.jar
       flat: yes
-  when: onprem.stat.exists == True
+  when: onprem.stat.exists
 
 - name: check container db2 for db2jcc jars
   stat:
@@ -23,4 +23,4 @@
       src: ~/{{ svt_db_dir }}/backup/db2jcc4.jar
       dest: /tmp/db2jcc4.jar
       flat: yes
-  when: container.stat.exists == True
+  when: container.stat.exists
