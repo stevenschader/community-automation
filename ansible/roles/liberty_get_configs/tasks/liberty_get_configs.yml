@@ -21,6 +21,8 @@
       dest: configs.zip
       exclude_path:
         - "{{ wlp_usr_dir }}/shared/stackGroups"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps/expanded"
+        - "{{ wlp_usr_dir }}/shared/apps/expanded"
       exclusion_patterns:
         - '*.jar'
         - '*.zip'

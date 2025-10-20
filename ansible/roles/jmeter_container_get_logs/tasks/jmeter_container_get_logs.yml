@@ -16,7 +16,7 @@
   community.general.archive:
     path:
     - "/home/{{ ansible_user }}/jmeter.log"
-    - "/home/{{ ansible_user }}/jmeter.error"
+    # - "/home/{{ ansible_user }}/jmeter.error"
     dest: logs.tar
     format: tar
 
