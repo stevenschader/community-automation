@@ -17,11 +17,14 @@
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
+        # Instead of including the entire apps directory and trying to exclude expanded,
+        # we'll explicitly include only what we want from the apps directory
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps/*.xml"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps/*.ear"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps/*.war"
       dest: configs.zip
       exclude_path:
         - "{{ wlp_usr_dir }}/shared/stackGroups"
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps/expanded"
         - "{{ wlp_usr_dir }}/shared/apps/expanded"
       exclusion_patterns:
         - '*.jar'
