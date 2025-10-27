@@ -1,0 +1,13 @@
+#
+# Create MLS cluster
+#
+import time
+
+print ("Creating cluster MLSCluster1")
+AdminTask.createCluster(['-clusterConfig', ['-clusterName', 'MLSCluster1', '-clusterType', 'MANAGED_LIBERTY_SERVER']])
+print ("finished createCluster")
+AdminTask.createClusterMember(['-clusterName', 'MLSCluster1', '-memberConfig', ['-memberNode', 'node1', '-memberName', 'libertyServer']])
+print ("finished createClusterMember for node1")
+AdminTask.createClusterMember(['-clusterName', 'MLSCluster1', '-memberConfig', ['-memberNode', 'node2', '-memberName', 'libertyServer']])
+print ("finished createClusterMember for node2")
+AdminConfig.save()
