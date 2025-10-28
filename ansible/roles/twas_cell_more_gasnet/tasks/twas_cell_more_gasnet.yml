@@ -9,7 +9,7 @@
 
 - name: Run wsadmin script to create DB2 datasource
   ansible.builtin.command:
-    cmd: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -f gasnet_datasource.py username {{ twas_username }} -password {{ twas_password }}"
+    cmd: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -f gasnet_datasource.py -username {{ twas_username }} -password {{ twas_password }}"
   register: wsadmin_result
   changed_when: "'WASX7209I: Connected to process' in wsadmin_result.stderr"
   failed_when: wsadmin_result.rc != 0
