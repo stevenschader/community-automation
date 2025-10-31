@@ -1,7 +1,6 @@
 ---
 - name: Any Liberty configs block
-  when: 
-    - more_enabled is not defined or not more_enabled
+  when: not (more_enabled | default(false))
   block:
     - name: Any configs?
       ansible.builtin.stat:
@@ -38,8 +37,7 @@
           format: zip
 
 - name: Any MoRE Liberty configs block
-  when: 
-    - more_enabled is defined or more_enabled
+  when: more_enabled | default(false)
   block:
 
     - name: set fact

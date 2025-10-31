@@ -1,7 +1,7 @@
 ---
 - name: Any Liberty logs block
   when: 
-    - more_enabled is not defined or not more_enabled
+    - not (more_enabled | default(false))
   block:
     - name: Any Liberty logs?
       ansible.builtin.stat:
@@ -27,8 +27,7 @@
         mode: '0755'
 
 - name: Any MoRE Liberty logs block
-  when: 
-    - more_enabled is defined and more_enabled
+  when: more_enabled | default(false)
   block:
     - name: Any MoRE logs?
       ansible.builtin.stat:

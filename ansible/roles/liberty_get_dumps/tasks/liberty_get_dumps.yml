@@ -1,7 +1,7 @@
 ---
 - name: Any Liberty dumps block
   when: 
-    - more_enabled is not defined or not more_enabled
+    - not (more_enabled | default(false))
   block:
     - name: Any Cores?
       ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
@@ -32,8 +32,7 @@
             - '*.gz'
 
 - name: Any MoRE Liberty dumps block
-  when: 
-    - more_enabled is defined and more_enabled
+  when: more_enabled | default(false)
   block:
     - name: Any Cores?
       ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/javacore*"
