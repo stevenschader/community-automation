@@ -97,13 +97,22 @@
       path: configs.zip
       state: absent
 
-  # unarchive fails to find handler
   - name: Extract the liberty config archive
     delegate_to: localhost
     ansible.builtin.unarchive:
       src: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
       dest: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
+    when: not (more_enabled | default(false))
+
+  - name: Extract the liberty config archive
+    delegate_to: localhost
+    ansible.builtin.unarchive:
+      src: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
+      dest: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+      remote_src: false
+      creates: true
+    when: more_enabled | default(false)
 
   - name: Find files with restricted permissions
     ansible.builtin.find:
