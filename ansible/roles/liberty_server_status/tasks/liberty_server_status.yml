@@ -10,15 +10,15 @@
     server_maint_status: false
 
 - name: MLS Server Status block
-  when: more_enabled is defined
-  block: 
+  when: (more_enabled | default(false))
+  block:
 
     - name: tWAS MoRE Liberty status
       ansible.builtin.include_role:
         name: twas_status_mls
 
 - name: Liberty Server Status block
-  when: more_enabled is not defined
+  when: not (more_enabled | default(false))
   block:
 
     - name: Check server status

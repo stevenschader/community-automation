@@ -58,7 +58,7 @@
         server_status: "{{ item.stdout | regex_search('(RUNNING|STOPPED)') | default('UNKNOWN') }}"
       with_items: "{{ statusMlsOutput.results }}"
       register: extracted_status
-      
+
     - name: ManagedLibertyServer status output
       ansible.builtin.debug:
         msg: "Status: {{ item.ansible_facts.server_status }}"
