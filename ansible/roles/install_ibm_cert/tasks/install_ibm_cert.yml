@@ -13,7 +13,7 @@
 - name: Find Java keytool
   ansible.builtin.find:
     paths: "{{ ibm_cert_jre_path }}"
-    patterns: "keytool"
+    patterns: "keytool,keytool.exe"
     recurse: true
   register: keytool_find
 
