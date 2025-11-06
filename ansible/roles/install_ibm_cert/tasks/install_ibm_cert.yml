@@ -60,7 +60,7 @@
     - name: Download IBM Digital Certs root certificate
       ansible.builtin.get_url:
         url: "{{ ibm_cert_url }}"
-        dest: ibm_root.cer
+        dest: ./ibm_root.cer
         validate_certs: false
         mode: '0644'
 
@@ -68,13 +68,13 @@
       ansible.builtin.command: >
         {{ keytool_path }} -import -trustcacerts -noprompt
         -keystore {{ cacerts_path }} -storepass changeit
-        -alias {{ ibm_cert_alias }} -file ibm_root.cer
+        -alias {{ ibm_cert_alias }} -file ./ibm_root.cer
       register: cert_import
       changed_when: cert_import.rc == 0
 
     - name: Remove temporary certificate file
       ansible.builtin.file:
-        path: ibm_root.cer
+        path: ./ibm_root.cer
         state: absent
 
     - name: Verify certificate installation
