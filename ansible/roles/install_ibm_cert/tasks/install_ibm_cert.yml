@@ -20,6 +20,7 @@
 - name: Set keytool path
   ansible.builtin.set_fact:
     keytool_path: "{{ keytool_find.files[0].path }}"
+    is_windows_keytool: "{{ keytool_find.files[0].path.endswith('.exe') }}"
   when: keytool_find.matched > 0
 
 - name: Verify keytool exists
@@ -37,6 +38,7 @@
 - name: Set cacerts path
   ansible.builtin.set_fact:
     cacerts_path: "{{ cacerts_find.files[0].path }}"
+    cacerts_path_win: "{{ cacerts_find.files[0].path | regex_replace('^/cygdrive/([a-z])/', '\\1:/') | regex_replace('^/home/', 'C:/cygwin64/home/') | replace('/', '\\\\') }}"
   when: cacerts_find.matched > 0
 
 - name: Verify cacerts exists
@@ -46,7 +48,7 @@
 
 - name: Check if certificate already exists in keystore
   ansible.builtin.command: >
-    {{ keytool_path }} -list -keystore {{ cacerts_path }}
+    {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
     -storepass changeit -alias {{ ibm_cert_alias }}
   register: cert_check
   failed_when: false
@@ -64,11 +66,20 @@
         validate_certs: false
         mode: '0644'
 
+    - name: Get absolute path of certificate file
+      ansible.builtin.stat:
+        path: ./ibm_root.cer
+      register: cert_file_stat
+
+    - name: Set certificate file path for Windows
+      ansible.builtin.set_fact:
+        cert_file_path: "{{ is_windows_keytool | default(false) | ternary(cert_file_stat.stat.path | regex_replace('^/cygdrive/([a-z])/', '\\1:/') | regex_replace('^/home/', 'C:/cygwin64/home/') | replace('/', '\\\\'), cert_file_stat.stat.path) }}"
+
     - name: Import certificate into Java keystore
       ansible.builtin.command: >
         {{ keytool_path }} -import -trustcacerts -noprompt
-        -keystore {{ cacerts_path }} -storepass changeit
-        -alias {{ ibm_cert_alias }} -file ./ibm_root.cer
+        -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }} -storepass changeit
+        -alias {{ ibm_cert_alias }} -file {{ cert_file_path }}
       register: cert_import
       changed_when: cert_import.rc == 0
 
@@ -79,7 +90,7 @@
 
     - name: Verify certificate installation
       ansible.builtin.command: >
-        {{ keytool_path }} -list -keystore {{ cacerts_path }}
+        {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
         -storepass changeit -alias {{ ibm_cert_alias }}
       register: cert_verify
       changed_when: false
