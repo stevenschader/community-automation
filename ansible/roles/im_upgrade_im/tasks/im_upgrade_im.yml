@@ -46,5 +46,6 @@
       failed_when: ( updateOutput.rc not in [ 0, 1 ] )
 
     - name: Install IBM Digital Certs root certificate
+      when: ibm_cert_url is defined
       ansible.builtin.include_role:
         name: install_ibm_cert

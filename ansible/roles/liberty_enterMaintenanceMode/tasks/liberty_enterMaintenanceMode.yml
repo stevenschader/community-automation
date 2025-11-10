@@ -22,7 +22,7 @@
         ignore_errors: true
 
       - name: Delete temp file
-        file:
+        ansible.builtin.file:
           state: absent
           path: "/tmp/cc_alive_{{ cc_hostname }}"
 
@@ -32,7 +32,7 @@
         when: ccalive.msg is search('Request failed') or ccalive.status_code is not defined
 
       - name: Controller is alive
-        when: 
+        when:
           - ccalive.status_code is defined 
           - ccalive.status_code == 200
         block:

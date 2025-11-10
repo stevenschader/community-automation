@@ -108,3 +108,8 @@
   ansible.builtin.file:
     path: "{{ install_base }}/im_install"
     state: absent
+
+- name: Install IBM Digital Certs root certificate
+  when: ibm_cert_url is defined
+  ansible.builtin.include_role:
+    name: install_ibm_cert

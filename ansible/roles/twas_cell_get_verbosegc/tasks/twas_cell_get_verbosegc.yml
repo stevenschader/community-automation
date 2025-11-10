@@ -1,6 +1,6 @@
 ---
 - name: Any verbosegc files?
-  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/ -name {{ verbosegc_file_template }}"
+  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/ -name {{ verbosegc_file_template }} -mtime {{ log_time_window }}"
   register: isverbosegc
 
 - name: Verbosegc archive logic
