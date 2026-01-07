@@ -50,7 +50,9 @@
   become: true
   when: issudoers.stat.exists
 
-- block:
+- name: Update linux /etc/security/limits
+  when: ansible_system == 'Linux'
+  block:
     - name: Nest hard ulimit nofile
       ansible.builtin.lineinfile:
         path: /etc/security/limits.conf
@@ -58,6 +60,8 @@
         regexp: "{{ user_username }} hard"
         line: "{{ user_username }} hard nofile 20000"
         backup: true
+        create: true
+        mode: '0644'
       become: true
 
     - name: Nest soft ulimit nofile
@@ -67,9 +71,9 @@
         regexp: "{{ user_username }} soft"
         line: "{{ user_username }} soft nofile 20000"
         backup: true
+        create: true
+        mode: '0644'
       become: true
-  when:
-    - ansible_system == 'Linux'
 
 - name: Nest ulimit nofile
   ansible.builtin.lineinfile:

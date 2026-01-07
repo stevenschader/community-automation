@@ -2,7 +2,7 @@
 # specific OS supports wildcards
 - name: remove extraneous packages
   become: true
-  ignore_errors: yes
+  ignore_errors: true
   zypper:
    name: "{{ packages }}"
    state: absent
