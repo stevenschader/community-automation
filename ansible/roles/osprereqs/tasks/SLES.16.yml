@@ -31,7 +31,6 @@
    - 'less'
    - 'psmisc'
    - 'bind-utils'
-   - 'insserv-compat'
    - 'zip'
    - 'unzip'
 
