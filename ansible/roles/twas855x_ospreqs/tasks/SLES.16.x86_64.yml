@@ -1,13 +1,5 @@
 ---
 
-- name: Install packages
-  become: true
-  zypper:
-   name: "{{ packages }}"
-   state: present
-  vars:
-   packages:
-  #  - 'libgtk-3-0-32bit'
-  #  - 'libgthread-2_0-0-32bit'
-   - 'libXtst6-32bit'
-   - 'libstdc++6-32bit'
+- name: SLES16 has no 32bit support
+  debug:
+  msg: "SLES16 has no 32bit support"
