@@ -1,5 +1,6 @@
 ---
 
-- name: SLES16 has no 32bit support
-  debug:
-  msg: "SLES16 has no 32bit support"
+- name: No 32bit support on SLES16
+  delegate_to: localhost
+  ansible.builtin.debug:
+    msg: No 32bit support on SLES16
