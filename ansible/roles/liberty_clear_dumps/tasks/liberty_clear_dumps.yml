@@ -9,7 +9,7 @@
   when: 
     - more_enabled | default(false)
   set_fact: 
-    local_usr_dir: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/"
+    local_usr_dir: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/"
 
 - name: Any heapdumps?
   ansible.builtin.shell: "find {{ local_usr_dir }} -name 'heapdump*'"
