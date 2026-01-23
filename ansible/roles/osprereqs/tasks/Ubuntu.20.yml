@@ -6,13 +6,12 @@
   apt:
    name: "{{ packages }}"
    state: absent
-   autoremove: yes
+   autoremove: true
   vars:
    packages:
    - "java*"
    - "samba*"
    - "valgrind*"
-   - "git*"
    - "tignervnc"
 
 - name: apt update

@@ -7,14 +7,13 @@
   ansible.builtin.dnf:
     name: "{{ packages }}"
     state: absent
-    autoremove: yes
+    autoremove: true
   vars:
     packages:
       - "adobe*"
       - "java*"
       - "samba*"
       - "valgrind*"
-      - "git*"
       - "tignervnc"
       - '@workstation'
       - 'tigervnc-server'
@@ -31,7 +30,7 @@
   ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
-    skip_broken: yes
+    skip_broken: true
   vars:
     packages:
       - 'xorg-x11-xauth'

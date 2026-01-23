@@ -3,18 +3,17 @@
 # if the db is corrupt, this can fix it: rpm --rebuilddb
 - name: remove extraneous packages
   become: true
-  ignore_errors: yes
+  ignore_errors: true
   yum:
    name: "{{ packages }}"
    state: absent
-   autoremove: yes
+   autoremove: true
   vars:
    packages:
    - "adobe*"
    - "java*"
    - "samba*"
    - "valgrind*"
-   - "git*"
    - "tignervnc"
    - '@workstation'
    - 'tigervnc-server'
@@ -22,7 +21,7 @@
 
 - name: yum update
   become: true
-  ignore_errors: yes
+  ignore_errors: true
   yum:
    name: '*'
    state: latest
@@ -32,7 +31,7 @@
   yum:
    name: "{{ packages }}"
    state: present
-   skip_broken: yes
+   skip_broken: true
   vars:
    packages:
    - 'xorg-x11-xauth'

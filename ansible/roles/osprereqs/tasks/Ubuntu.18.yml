@@ -2,17 +2,16 @@
 # specific OS supports wildcards
 - name: remove extraneous packages
   become: true
-  ignore_errors: yes
+  ignore_errors: true
   apt:
    name: "{{ packages }}"
    state: absent
-   autoremove: yes
+   autoremove: true
   vars:
    packages:
    - "java*"
    - "samba*"
    - "valgrind*"
-   - "git*"
    - "tignervnc"
 
 - name: apt update

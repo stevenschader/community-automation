@@ -14,7 +14,6 @@
    - "java*"
    - "samba*"
    - "valgrind*"
-   - "git*"
    - "tignervnc"
    - '@workstation'
    - 'tigervnc-server'
