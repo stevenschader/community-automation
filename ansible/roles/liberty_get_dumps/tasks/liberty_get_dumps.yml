@@ -128,3 +128,67 @@
   - name: Dumps directory location
     debug:
       msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+
+  - name: Find javacore files in extracted dumps
+    delegate_to: localhost
+    ansible.builtin.find:
+      paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      patterns: 'javacore*.txt'
+      recurse: true
+    register: javacore_files
+
+  - name: Get javacore metadata
+    delegate_to: localhost
+    when: javacore_files.matched > 0
+    block:
+      - name: Extract dump reason from latest javacore
+        ansible.builtin.shell: |
+          grep -m 1 "Dump Event" "{{ javacore_files.files | sort(attribute='mtime', reverse=true) | first | json_query('path') }}" | sed 's/.*Dump Event/Dump Event/'
+        register: dump_reason
+        failed_when: false
+
+      - name: Set javacore facts
+        ansible.builtin.set_fact:
+          javacore_data:
+            number_of_javacores: "{{ javacore_files.matched }}"
+            latest_javacore: "{{ javacore_files.files | sort(attribute='mtime', reverse=true) | first | json_query('path') | basename }}"
+            reason_javacore: "{{ dump_reason.stdout | default('') }}"
+
+      - name: Set empty javacore facts when no javacores found
+        delegate_to: localhost
+        when: javacore_files.matched == 0
+        ansible.builtin.set_fact:
+          javacore_data:
+            number_of_javacores: "0"
+            latest_javacore: ""
+            reason_javacore: ""
+
+      - name: Load existing java_core.json if it exists
+        delegate_to: localhost
+        ansible.builtin.slurp:
+          path: "{{ dumps_dir }}/{{ env_name }}/java_core.json"
+        register: existing_json
+        failed_when: false
+        ignore_errors: true
+
+      - name: Parse existing JSON or initialize empty dict
+        delegate_to: localhost
+        ansible.builtin.set_fact:
+          java_core_dict: "{{ existing_json.content | b64decode | from_json if existing_json.content is defined else {} }}"
+
+      - name: Update java_core dictionary with current server data
+        delegate_to: localhost
+        ansible.builtin.set_fact:
+          java_core_dict: "{{ java_core_dict | combine({ansible_fqdn: {wl_server: javacore_data}}, recursive=true) }}"
+
+      - name: Write java_core.json
+        delegate_to: localhost
+        ansible.builtin.copy:
+          content: "{{ java_core_dict | to_nice_json }}"
+          dest: "{{ dumps_dir }}/{{ env_name }}/java_core.json"
+          mode: '0644'
+
+      - name: Display java_core.json location
+        delegate_to: localhost
+        debug:
+          msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/java_core.json"
