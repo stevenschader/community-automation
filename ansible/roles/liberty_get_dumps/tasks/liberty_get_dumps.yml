@@ -166,7 +166,7 @@
       - name: Load existing java_core.json if it exists
         delegate_to: localhost
         ansible.builtin.slurp:
-          path: "{{ dumps_dir }}/{{ env_name }}/java_core.json"
+          path: "{{ dumps_dir }}/{{ env_name }}/{{ java_core_json_file }}"
         register: existing_json
         failed_when: false
         ignore_errors: true
@@ -185,10 +185,10 @@
         delegate_to: localhost
         ansible.builtin.copy:
           content: "{{ java_core_dict | to_nice_json }}"
-          dest: "{{ dumps_dir }}/{{ env_name }}/java_core.json"
+          dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ java_core_json_file }}"
           mode: '0644'
 
       - name: Display java_core.json location
         delegate_to: localhost
         debug:
-          msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/java_core.json"
+          msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ java_core_json_file }}"
