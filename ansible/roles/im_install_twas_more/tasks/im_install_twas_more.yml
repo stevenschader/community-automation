@@ -30,7 +30,11 @@
     #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager
     #  which works on rtp hosts
   - name:  generate external ibm secureStorageFile.store
-    shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: saveCredentialOutput
+    retries: 3
+    delay: 10
+    until: saveCredentialOutput.rc == 0
 
   - name: Install tWAS MoRE
     ansible.builtin.shell: "time {{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"

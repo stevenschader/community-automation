@@ -33,6 +33,9 @@
       - name: Generate external ibm secureStorageFile.store
         ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
         register: saveCredentialOutput
+        retries: 3
+        delay: 10
+        until: saveCredentialOutput.rc == 0
 
       - name: saveCredentialOutput
         ansible.builtin.debug:
@@ -64,19 +67,19 @@
         ansible.builtin.stat:
           path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
         register: isserverenv
-        
+
       - name: Remove JAVA_HOME from any servers server.env
         when: isserverenv.stat.exists
         ansible.builtin.lineinfile:
           path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
           regexp: "^JAVA_HOME*"
           state: absent
-          
+
       - name: Check if wlp/etc/server.env the global JAVA_HOME in server.env
         ansible.builtin.stat:
           path: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
         register: isserverenv
-        
+
       - name: Adust the  global JAVA_HOME in server.env
         when: isserverenv.stat.exists
         ansible.builtin.lineinfile:

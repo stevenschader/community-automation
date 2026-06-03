@@ -30,10 +30,14 @@
       shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
     - name: Generate external ibm secureStorageFile.store
-      shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+      register: saveCredentialOutput
+      retries: 3
+      delay: 10
+      until: saveCredentialOutput.rc == 0
 
     - name: Install Liberty MoRE
-      shell: "time {{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+      ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
       register: installOutput
 
     - name: InstallOutput
@@ -41,7 +45,7 @@
         msg: "{{ installOutput.stdout_lines }}"
 
     - name: ListInstalledPackages
-      shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
       register: packageOutput
 
     - name: IM PackageOutput
