@@ -24,6 +24,10 @@
 
   - name: Generate secureStorageFile.store
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: saveCredentialOutput
+    retries: 3
+    delay: 10
+    until: saveCredentialOutput.rc == 0
 
     #  this command is hanging on the pok zlinux boxes for some crazy networking reason
     #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager

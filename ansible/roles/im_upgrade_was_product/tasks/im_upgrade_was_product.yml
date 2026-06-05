@@ -13,26 +13,33 @@
       path: "{{ install_base }}/IM/secureStorageFile.store"
       state: absent
 
-  - name:  Generate secureStorageFile.store
+  - name: Generate secureStorageFile.store
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
-
+    register: saveCredentialOutput
+    retries: 3
+    delay: 10
+    until: saveCredentialOutput.rc == 0
   # - name:  generate external ibm secureStorageFile.store
   #   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    # register: saveCredentialOutput
+    # retries: 3
+    # delay: 10
+    # until: saveCredentialOutput.rc == 0
 
-  - name:  Upgrade WAS product
+  - name: Upgrade WAS product
     ansible.builtin.shell: "time {{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_was_upgrade.xml -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
     register: upgradeOutput
 
   - name: UpgradeOutput
-    ansible.builtin.debug: 
+    ansible.builtin.debug:
       msg: "{{ upgradeOutput.stdout_lines }}"
 
   - name:  ListInstalledPackages
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
 
-  - name: packageOutput
-    ansible.builtin.debug: 
+  - name: PackageOutput
+    ansible.builtin.debug:
       msg: "{{ packageOutput.stdout_lines }}"
 
 - name: Versions
@@ -43,6 +50,6 @@
     register: wasVersionOutput
 
   - name: WasVersionOutput
-    ansible.builtin.debug: 
+    ansible.builtin.debug:
       msg: "{{ wasVersionOutput.stdout_lines }}"
     failed_when: twas_im_driver not in wasVersionOutput.stdout

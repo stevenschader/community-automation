@@ -17,13 +17,17 @@
 
 - name: Generate secureStorageFile.store
   ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
+  register: saveCredentialOutput
+  retries: 3
+  delay: 10
+  until: saveCredentialOutput.rc == 0
 
 - name:  install http plugins wct
   ansible.builtin.shell: "time {{ install_ihs_base }}/IM/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
   register: installOutput
 
 - name: InstallOutput
-  ansible.builtin.debug: 
+  ansible.builtin.debug:
     msg: "{{ installOutput.stdout_lines }}"
 
 # pure hack to get zLinux s390x WCT 32bit java to use 64bit java
@@ -74,7 +78,7 @@
     ansible.builtin.template:
       src: ihsserverkey{{ ext }}.j2
       dest: "{{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey{{ ext }}"
-      mode: 0755
+      mode: '0755'
 
   - name:  Check for any old WCT IHS/Plugin configs
     ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -listDefinitionLocations"

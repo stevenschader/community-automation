@@ -17,7 +17,11 @@
   - name: Generate secureStorageFile.store
     become: true
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
-
+    register: saveCredentialOutput
+    retries: 3
+    delay: 10
+    until: saveCredentialOutput.rc == 0
+  
   - name: Upgrade WAS ULB product
     become: true
     ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl updateAll -installationDirectory {{ install_base }}/{{ app_dir }} -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store -repositories 'https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}/{{ twas_daily_or_test }}/{{ twas_im_driver }}.linux/linux/zipper/repository'"
