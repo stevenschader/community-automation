@@ -30,7 +30,7 @@
   - name:  ListInstalledPackages
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
-  
+
   - name: packageOutput
     ansible.builtin.debug: 
       msg: "{{ packageOutput.stdout_lines }}"
