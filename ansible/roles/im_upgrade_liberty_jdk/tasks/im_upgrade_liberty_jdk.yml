@@ -48,7 +48,7 @@
 
       - name: Upgrade liberty jdk
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
-          -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
+          -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}/repository.config \
           -installationDirectory {{ cygwin }}{{ install_base }}/{{ liberty_dir }} \
           -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store \
           -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ cygwin }}{{ install_base }}/{{ shared_dir }}"
