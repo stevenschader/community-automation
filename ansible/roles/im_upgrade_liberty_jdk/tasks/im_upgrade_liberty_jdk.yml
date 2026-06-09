@@ -46,6 +46,10 @@
       #   ansible.builtin.debug:
       #     msg: "{{ jdkDebugOutput.stdout_lines }}"
 
+      - name: Upgrade liberty jdk repo
+        ansible.builtin.debug:
+          msg: "{{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}/repository.config"
+
       - name: Upgrade liberty jdk
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}/repository.config \
