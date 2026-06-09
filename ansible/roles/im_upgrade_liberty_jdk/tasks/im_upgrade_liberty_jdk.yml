@@ -22,27 +22,19 @@
         register: isimcl
         failed_when: isimcl.stat.exists == False
 
-      - name: Generate secureStorageFile.store
-        ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
-        register: saveCredentialOutput
-        retries: 3
-        delay: 10
-        until: saveCredentialOutput.rc == 0
+      - name: If using remote jdk repo
+        when: jdk_repo_type == 'remote'
+        block:
+          - name: Generate external ibm secureStorageFile.store
+            ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url  {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+            register: saveCredentialOutput
+            retries: 3
+            delay: 10
+            until: saveCredentialOutput.rc == 0
 
-      - name: saveCredentialOutput
-        ansible.builtin.debug:
-          msg: "{{ saveCredentialOutput.stdout_lines }}"
-
-      - name: Generate external ibm secureStorageFile.store
-        ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
-        register: saveCredentialOutput
-        retries: 3
-        delay: 10
-        until: saveCredentialOutput.rc == 0
-
-      - name: saveCredentialOutput
-        ansible.builtin.debug:
-          msg: "{{ saveCredentialOutput.stdout_lines }}"
+          - name: SaveCredentialOutput
+            ansible.builtin.debug:
+              msg: "{{ saveCredentialOutput.stdout_lines }}"
 
       # - name: List available jdks in the target repository
       #   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listAvailablePackages \
@@ -56,7 +48,7 @@
 
       - name: Upgrade liberty jdk
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
-          -repositories https://www.ibm.com/software/repositorymanager/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
+          -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -installationDirectory {{ cygwin }}{{ install_base }}/{{ liberty_dir }} \
           -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store \
           -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ cygwin }}{{ install_base }}/{{ shared_dir }}"

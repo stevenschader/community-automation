@@ -18,3 +18,5 @@ im_liberty_package: 'com.ibm.websphere.liberty.ND'
 im_liberty_jdk_package: 'com.ibm.java.jdk.v' # no java version since we are using this to rollback / upgrade
 im_java_short_version: '21' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8
 verboseGC: true
+jdk_repo_type: 'remote' # mirror or remote
+jdk_repo_url: 'http://www.ibm.com/software/repositorymanager'

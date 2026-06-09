@@ -5,7 +5,7 @@
 ### "ansible_architecture": "chrp", --- AIX
 
 - name: Check if imcl installed as a prereq
-  stat:
+  ansible.builtin.stat:
     path: "{{ install_base }}/IM/eclipse/tools/imcl"
   changed_when: false
   failed_when: false
@@ -43,18 +43,18 @@
   when: ansible_system == 'OS400'
   block:
   - name: check if softlinks zip/unzip/zipinfo exist on as400
-    stat:
+    ansible.builtin.stat:
      path: "/QOpenSys/usr/bin/zipinfo"
     register: issoftlinks
   - name: softlink the zip/zipinfo/unzip into default path
     when: issoftlinks.stat.exists == False
-    shell: |
+    ansible.builtin.shell: |
       ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo 
       ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip 
       ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip
 
 - name: Temp im install dir
-  file:
+  ansible.builtin.file:
    path: "{{ install_base }}/im_install"
    state: directory
 
@@ -64,12 +64,12 @@
     state: absent
 
 - name: Copy ibm_im_responsefile.xml template
-  template:
+  ansible.builtin.template:
    src: ibm_im_responsefile.xml.j2
    dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
 - name: What is install_base set to
-  debug: 
+  dansible.builtin.ebug:
    msg: "{{ install_base }}"
 
 - name: Get im archive
@@ -82,10 +82,10 @@
    validate_certs: false
 
 - name: Unarchive im.zip
-  unarchive:
+  ansible.builtin.unarchive:
    src: /tmp/im.zip
    dest: "{{ install_base }}/im_install"
-   remote_src: True
+   remote_src: true
 
 - name: Clean up im.zip
   ansible.builtin.file:
@@ -95,13 +95,13 @@
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
 - name: Run the install ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
-  shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
+  ansible.builtin.shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
   args:
     chdir: "{{ install_base }}/im_install"
   register: userinstcOutput
-    
+
 - name: Userinstc output
-  debug: 
+  ansible.builtin.debug:
    msg: "{{ userinstcOutput.stdout_lines }}"
 
 - name: Clean up im_install temp repo
