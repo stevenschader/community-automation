@@ -50,12 +50,11 @@
         msg: "{{ updateOutput.stdout_lines }}"
       failed_when: ( updateOutput.rc not in [ 0, 1 ] )
 
-- name: Adjust -Xmx value in imcl
+- name: Adjust -Xmx value in imcl.ini
   ansible.builtin.lineinfile:
-    path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl"
-    regexp: '^(.*)-Xmx\d+m(.*)$'
-    line: '\1-Xmx2048m\2'
-    backrefs: true
+    path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl.ini"
+    regexp: '^-Xmx\d+m$'
+    line: '-Xmx2048m'
   register: xmx_update
 
 - name: Display Xmx adjustment result
