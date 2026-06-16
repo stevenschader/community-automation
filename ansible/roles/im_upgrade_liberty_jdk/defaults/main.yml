@@ -6,7 +6,7 @@ jdk_repo:
     external: 'https://www.ibm.com/software/repositorymanager/'
     internal_dns: 'https://yourdns/binaries/semeru_mirrored_repo'
     internal_ip: 'https://1.2.3.4/binaries/semeru_mirrored_repo'
-    default: '{{ jdk_repo.url.external }}'  # Primary URL to use
+    default: 'https://www.ibm.com/software/repositorymanager/'  # Primary URL to use
   connection:
     timeout: 300  # seconds
     validate_certs: true
