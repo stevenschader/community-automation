@@ -30,14 +30,15 @@
     - name: Ensure target directory exists
       delegate_to: localhost
       ansible.builtin.file:
-        path: "{{ dumps_dir }}/{{ env_name }}/{{ profile_name }}"
+        path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}"
         state: directory
         mode: '0755'
 
     - name: Fetch the tWAS dump archive
       ansible.builtin.fetch:
+        flat: true
         src: dumps.zip
-        dest: "{{ dumps_dir }}/{{ env_name }}/{{ profile_name }}"
+        dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}"
 
     - name: Remove temp dumps.zip
       ansible.builtin.file:
