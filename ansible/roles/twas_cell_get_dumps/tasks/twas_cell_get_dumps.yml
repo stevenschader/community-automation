@@ -27,10 +27,17 @@
           - '*.gz'
         mode: '0755'
 
+    - name: Ensure target directory exists
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ dumps_dir }}/{{ env_name }}/{{ profile_name }}"
+        state: directory
+        mode: '0755'
+
     - name: Fetch the tWAS dump archive
       ansible.builtin.fetch:
         src: dumps.zip
-        dest: "{{ dumps_dir }}/{{ env_name }}"
+        dest: "{{ dumps_dir }}/{{ env_name }}/{{ profile_name }}"
 
     - name: Remove temp dumps.zip
       ansible.builtin.file:
@@ -41,24 +48,24 @@
     - name: Extract the tWAS dump archive
       delegate_to: localhost
       ansible.builtin.unarchive:
-        src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
-        dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/dumps.zip"
+        dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}"
         remote_src: false
 
     - name: Remove dumps.zip
       delegate_to: localhost
       ansible.builtin.file:
-        path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+        path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/dumps.zip"
         state: absent
 
     - name: Dumps directory location
       ansible.builtin.debug:
-        msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}"
 
     - name: Find javacore files in extracted dumps
       delegate_to: localhost
       ansible.builtin.find:
-        paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/profiles/{{ profile_name }}/"
+        paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/"
         patterns: 'javacore*.txt'
         recurse: true
       register: javacore_files
@@ -111,10 +118,10 @@
           delegate_to: localhost
           ansible.builtin.copy:
             content: "{{ java_core_dict | to_nice_json }}"
-            dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/profiles/{{ profile_name }}/{{ java_core_json_file }}"
+            dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/{{ java_core_json_file }}"
             mode: '0644'
 
         - name: Display java_core.json location
           delegate_to: localhost
           ansible.builtin.debug:
-            msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/profiles/{{ profile_name }}/{{ java_core_json_file }}"
+            msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/{{ java_core_json_file }}"

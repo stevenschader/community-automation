@@ -8,7 +8,7 @@
       register: iscore
       failed_when: iscore.rc not in [0,2]
       ignore_errors: true
-      #allows it to pass for z/OS
+      # allows it to pass for z/OS
     - name: Any Heapdumps?
       ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
       register: isheap
@@ -17,7 +17,7 @@
 
     - name: Dump archive logic
       when: iscore.rc == 0 or isheap.rc == 0 
-      block: 
+      block:
       - name: Archive the liberty dump zip to fetch
         ignore_errors: true
         community.general.archive:
