@@ -75,9 +75,14 @@
       delegate_to: localhost
       when: javacore_files.matched > 0
       block:
-        - name: Extract dump reason from latest javacore
+        - name: Extract dump reason from latest javacore with Dump Event
           ansible.builtin.shell: |
-            grep -m 1 "Dump Event" "{{ javacore_files.files | sort(attribute='mtime', reverse=true) | first | json_query('path') }}" | sed 's/.*Dump Event/Dump Event/'
+            for file in {{ javacore_files.files | sort(attribute='mtime', reverse=true) | map(attribute='path') | join(' ') }}; do
+              if grep -q "Dump Event" "$file" && ! grep -q "Dump Requested" "$file"; then
+                grep -m 1 "Dump Event" "$file" | sed 's/.*Dump Event/Dump Event/'
+                break
+              fi
+            done
           register: dump_reason
           failed_when: false
 
