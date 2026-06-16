@@ -12,17 +12,17 @@
     when: cc_hostname is defined
     block:
       - name: Test connection to controller
-        get_url:
+        ansible.builtin.get_url:
           url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}/adminCenter"
           dest: "/tmp/cc_alive_{{ cc_hostname }}"
           mode: '0755'
           validate_certs: false
           timeout: 2
         register: ccalive
-        ignore_errors: true
+        failed_when: false
 
       - name: Delete temp file
-        file:
+        ansible.builtin.file:
           state: absent
           path: "/tmp/cc_alive_{{ cc_hostname }}"
 
@@ -32,7 +32,7 @@
         when: ccalive.msg is search('Request failed') or ccalive.status_code is not defined
 
       - name: Controller is alive
-        when: 
+        when:
           - ccalive.status_code is defined 
           - ccalive.status_code == 200
         block:

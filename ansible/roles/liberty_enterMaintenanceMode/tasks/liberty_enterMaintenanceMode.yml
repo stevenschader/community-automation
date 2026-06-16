@@ -19,7 +19,7 @@
           validate_certs: false
           timeout: 2
         register: ccalive
-        ignore_errors: true
+        failed_when: false
 
       - name: Delete temp file
         ansible.builtin.file:
@@ -33,7 +33,7 @@
 
       - name: Controller is alive
         when:
-          - ccalive.status_code is defined 
+          - ccalive.status_code is defined
           - ccalive.status_code == 200
         block:
         - name: Liberty enterMaintenanceMode
