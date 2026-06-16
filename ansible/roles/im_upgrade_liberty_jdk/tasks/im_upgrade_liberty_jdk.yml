@@ -23,10 +23,13 @@
         failed_when: isimcl.stat.exists == False
 
       - name: If using remote jdk repo
-        when: jdk_repo_type == 'remote'
+        when: jdk_repo.type == 'remote'
         block:
           - name: Generate external ibm secureStorageFile.store
-            ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url  {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+            ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url  \
+              {{ jdk_repo.url.default }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }}  \
+              -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' \
+              -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
             register: saveCredentialOutput
             retries: 3
             delay: 10
@@ -35,6 +38,43 @@
           - name: SaveCredentialOutput
             ansible.builtin.debug:
               msg: "{{ saveCredentialOutput.stdout_lines }}"
+
+      - name: Set the mirror jdk repo url
+        when: jdk_repo.type == 'mirror'
+        # Internal IBM networking hack
+        block:
+          - name: Adjust the jdk_repo_url to use the internal IBM mirror
+            block:
+              - name: Test connectivity to hostname-based mirror URL ip
+                ansible.builtin.uri:
+                  url: "{{ jdk_repo.url.internal_ip }}"
+                  method: HEAD
+                  timeout: 5
+                  validate_certs: false
+                register: hostname_url_test
+                failed_when: false
+
+              - name: Set jdk_repo_url based on connectivity test ip
+                when: hostname_url_test is succeeded
+                ansible.builtin.set_fact:
+                  jdk_repo_url: "{{ jdk_repo.url.internal_ip }}"
+
+              - name: Test IP connnectivity to hostname-based mirror URL ip
+                when: jdk_repo_url is not defined
+                block:
+                  - name: Test connectivity to hostname-based mirror URL dns
+                    ansible.builtin.uri:
+                      url: "{{ jdk_repo.url.internal_dns }}"
+                      method: HEAD
+                      timeout: 5
+                      validate_certs: false
+                    register: hostname_url_test
+                    failed_when: false
+
+                  - name: Set jdk_repo_url based on connectivity test dns
+                    when: hostname_url_test is succeeded
+                    ansible.builtin.set_fact:
+                      jdk_repo_url: "{{ jdk_repo.url.internal_dns }}"
 
       # - name: List available jdks in the target repository
       #   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listAvailablePackages \
