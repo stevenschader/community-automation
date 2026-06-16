@@ -38,7 +38,7 @@
       ansible.builtin.fetch:
         flat: true
         src: dumps.zip
-        dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}"
+        dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/"
 
     - name: Remove temp dumps.zip
       ansible.builtin.file:
