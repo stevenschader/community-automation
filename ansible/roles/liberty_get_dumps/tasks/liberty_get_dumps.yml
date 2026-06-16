@@ -7,19 +7,19 @@
       ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
       register: iscore
       failed_when: iscore.rc not in [0,2]
-      ignore_errors: True
+      ignore_errors: true
       #allows it to pass for z/OS
     - name: Any Heapdumps?
       ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
       register: isheap
       failed_when: isheap.rc not in [0,2]
-      ignore_errors: True
+      ignore_errors: true
 
     - name: Dump archive logic
       when: iscore.rc == 0 or isheap.rc == 0 
       block: 
       - name: Archive the liberty dump zip to fetch
-        ignore_errors: True
+        ignore_errors: true
         community.general.archive:
           path:
             - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
@@ -38,19 +38,19 @@
       ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/javacore*"
       register: iscore
       failed_when: iscore.rc not in [0,2]
-      ignore_errors: True
+      ignore_errors: true
       #allows it to pass for z/OS
     - name: Any Heapdumps?
       ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/heapdump*"
       register: isheap
       failed_when: isheap.rc not in [0,2]
-      ignore_errors: True
+      ignore_errors: true
 
     - name: Dump archive logic
       when: iscore.rc == 0 or isheap.rc == 0 
       block: 
       - name: Archive the liberty dump zip to fetch
-        ignore_errors: True
+        ignore_errors: true
         community.general.archive:
           path:
             - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/javacore*"
@@ -69,7 +69,7 @@
 
 - name: Dump archive logic
   when: isdumpszip.stat.exists
-  block: 
+  block:
   - name: Create local server dir
     delegate_to: localhost
     ansible.builtin.file:
@@ -121,12 +121,12 @@
 
   - name: Remove dumps.zip
     delegate_to: localhost
-    file:
+    ansible.builtin.file:
       path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
       state: absent
 
   - name: Dumps directory location
-    debug:
+    ansible.builtin.debug:
       msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
 
   - name: Find javacore files in extracted dumps
@@ -190,5 +190,5 @@
 
       - name: Display java_core.json location
         delegate_to: localhost
-        debug:
+        ansible.builtin.debug:
           msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ java_core_json_file }}"
