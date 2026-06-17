@@ -4,9 +4,4 @@ jdk_repo:
   type: 'remote'  # Options: 'mirror' (local mirror) or 'remote' (direct IBM repository)
   url:
     external: 'https://www.ibm.com/software/repositorymanager/'
-    internal_dns: 'https://yourdns/binaries/semeru_mirrored_repo'
-    internal_ip: 'https://1.2.3.4/binaries/semeru_mirrored_repo'
-    default: 'https://www.ibm.com/software/repositorymanager/'  # Primary URL to use
-  connection:
-    timeout: 300  # seconds
-    validate_certs: true
+    internal: 'https://yourdns/binaries/semeru_mirrored_repo'

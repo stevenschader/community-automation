@@ -45,53 +45,23 @@
 
       - name: Set the mirror jdk repo url
         when: jdk_repo.type == 'mirror'
-        # Internal IBM networking hack
-        block:
-          - name: Adjust the jdk_repo_url to use the internal IBM mirror
-            block:
-              - name: Test connectivity to hostname-based mirror URL ip
-                ansible.builtin.uri:
-                  url: "{{ jdk_repo.url.internal_ip }}"
-                  method: HEAD
-                  timeout: 5
-                  validate_certs: false
-                register: hostname_url_test_ip
-                failed_when: false
+        ansible.builtin.set_fact:
+          jdk_repo_url: "{{ jdk_repo.url.internal }}"
 
-              - name: Set jdk_repo_url based on connectivity test ip
-                when: hostname_url_test_ip.status == 200
-                ansible.builtin.set_fact:
-                  jdk_repo_url: "{{ jdk_repo.url.internal_ip }}"
-
-              - name: Test IP connnectivity to hostname-based mirror URL ip
-                when: hostname_url_test_ip.status != 200
-                block:
-                  - name: Test connectivity to hostname-based mirror URL dns
-                    ansible.builtin.uri:
-                      url: "{{ jdk_repo.url.internal_dns }}"
-                      method: HEAD
-                      timeout: 5
-                      validate_certs: false
-                    register: hostname_url_test_dns
-                    failed_when: false
-
-                  - name: Set jdk_repo_url based on connectivity test dns
-                    when: hostname_url_test_dns.status == 200
-                    ansible.builtin.set_fact:
-                      jdk_repo_url: "{{ jdk_repo.url.internal_dns }}"
-
-                  - name: Set jdk_repo_url to external
-                    when: hostname_url_test_dns.status != 200
-                    ansible.builtin.set_fact:
-                      jdk_repo_url: "{{ jdk_repo.url.external }}"
+      - name: Set jdk_repo_url to external
+        when: jdk_repo.type != 'mirror'
+        ansible.builtin.set_fact:
+          jdk_repo_url: "{{ jdk_repo.url.external }}"
 
       - name: List available jdks in the target repository
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listAvailablePackages \
           -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
         register: jdkDebugOutput
+        failed_when: false
 
       - name: List available jdks in the target repository output ( possibly missing versions causing errors )
+        when: jdkDebugOutput.stdout_lines is defined
         ansible.builtin.debug:
           msg: "{{ jdkDebugOutput.stdout_lines }}"
 
