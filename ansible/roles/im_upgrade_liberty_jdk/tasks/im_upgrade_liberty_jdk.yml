@@ -22,6 +22,10 @@
         register: isimcl
         failed_when: isimcl.stat.exists == False
 
+      - name: Print jdk_repo.type
+        ansible.builtin.debug:
+          msg: "jdk_repo.type= {{ jdk_repo.type }}"
+
       - name: If using remote jdk repo
         when: jdk_repo.type == 'remote'
         block:
@@ -51,16 +55,16 @@
                   method: HEAD
                   timeout: 5
                   validate_certs: false
-                register: hostname_url_test
+                register: hostname_url_test_ip
                 failed_when: false
 
               - name: Set jdk_repo_url based on connectivity test ip
-                when: hostname_url_test is succeeded
+                when: hostname_url_test_ip.status == 200
                 ansible.builtin.set_fact:
                   jdk_repo_url: "{{ jdk_repo.url.internal_ip }}"
 
               - name: Test IP connnectivity to hostname-based mirror URL ip
-                when: jdk_repo_url is not defined
+                when: hostname_url_test_ip.status != 200
                 block:
                   - name: Test connectivity to hostname-based mirror URL dns
                     ansible.builtin.uri:
@@ -68,23 +72,28 @@
                       method: HEAD
                       timeout: 5
                       validate_certs: false
-                    register: hostname_url_test
+                    register: hostname_url_test_dns
                     failed_when: false
 
                   - name: Set jdk_repo_url based on connectivity test dns
-                    when: hostname_url_test is succeeded
+                    when: hostname_url_test_dns.status == 200
                     ansible.builtin.set_fact:
                       jdk_repo_url: "{{ jdk_repo.url.internal_dns }}"
 
-      # - name: List available jdks in the target repository
-      #   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listAvailablePackages \
-      #     -repositories https://www.ibm.com/software/repositorymanager/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
-      #     -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
-      #   register: jdkDebugOutput
+                  - name: Set jdk_repo_url to external
+                    when: hostname_url_test_dns.status != 200
+                    ansible.builtin.set_fact:
+                      jdk_repo_url: "{{ jdk_repo.url.external }}"
 
-      # - name: List available jdks in the target repository output ( possibly missing versions causing errors )
-      #   ansible.builtin.debug:
-      #     msg: "{{ jdkDebugOutput.stdout_lines }}"
+      - name: List available jdks in the target repository
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listAvailablePackages \
+          -repositories {{ jdk_repo_url }}/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
+          -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+        register: jdkDebugOutput
+
+      - name: List available jdks in the target repository output ( possibly missing versions causing errors )
+        ansible.builtin.debug:
+          msg: "{{ jdkDebugOutput.stdout_lines }}"
 
       - name: Upgrade liberty jdk repo
         ansible.builtin.debug:
