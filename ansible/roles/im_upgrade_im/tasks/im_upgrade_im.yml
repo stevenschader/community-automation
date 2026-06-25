@@ -8,26 +8,6 @@
   ansible.builtin.include_role:
     name: install_ibm_cert
 
-- name: Warn and exit if IM upgrade repository is broken
-  # when: im_upgrade_repo is not defined or im_upgrade_repo == ''
-  block:
-    - name: Report broken IM upgrade repository
-      ansible.builtin.debug:
-        msg: "IM upgrade repository is broken or not defined (im_upgrade_repo='{{ im_upgrade_repo | default('') }}'), skipping IM upgrade"
-
-    - name: End role gracefully
-      ansible.builtin.meta: end_role
-
-- name: Test connection to repo since this does fail test commit
-  ansible.builtin.get_url:
-    url: "{{ im_upgrade_repo }}"
-    dest: /tmp/test_im_upgrade_repo.html
-    mode: '0755'
-    validate_certs: false
-    timeout: 2
-  register: repoexists
-  failed_when: false
-
 - name: Delete temp file
   ansible.builtin.file:
     state: absent
