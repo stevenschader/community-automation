@@ -15,8 +15,8 @@
       ansible.builtin.debug:
         msg: "IM upgrade repository is broken or not defined (im_upgrade_repo='{{ im_upgrade_repo | default('') }}'), skipping IM upgrade"
 
-    - name: End play gracefully
-      ansible.builtin.meta: end_play
+    - name: End role gracefully
+      ansible.builtin.meta: end_role
 
 - name: Test connection to repo since this does fail test commit
   ansible.builtin.get_url:
