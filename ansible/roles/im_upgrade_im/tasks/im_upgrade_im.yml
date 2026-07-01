@@ -8,6 +8,16 @@
   ansible.builtin.include_role:
     name: install_ibm_cert
 
+- name: Test connection to repo since this does fail test commit
+  ansible.builtin.get_url:
+    url: "{{ im_upgrade_repo }}"
+    dest: /tmp/test_im_upgrade_repo.html
+    mode: '0755'
+    validate_certs: false
+    timeout: 2
+  register: repoexists
+  failed_when: false
+
 - name: Delete temp file
   ansible.builtin.file:
     state: absent
@@ -15,7 +25,7 @@
 
 - name: Repo is not reachable
   ansible.builtin.debug:
-   msg: "IM repo->{{ im_upgrade_repo }} is not reachable, skipping im upgrade"
+    msg: "IM repo->{{ im_upgrade_repo }} is not reachable, skipping im upgrade"
   when: repoexists.msg is search('Request failed')
 
 - name: Repo is alive
