@@ -3,11 +3,6 @@
   ansible.builtin.debug:
     msg: "IM repo->{{ im_upgrade_repo }}"
 
-- name: Install IBM Digital Certs root certificate
-  when: ibm_cert_url is defined
-  ansible.builtin.include_role:
-    name: install_ibm_cert
-
 - name: Test connection to repo since this does fail test commit
   ansible.builtin.get_url:
     url: "{{ im_upgrade_repo }}"
@@ -61,3 +56,8 @@
   ansible.builtin.debug:
     msg: "Updated -Xmx value in imcl to 2048m"
   when: xmx_update.changed
+
+- name: Install IBM Digital Certs root certificate
+  when: ibm_cert_url is defined
+  ansible.builtin.include_role:
+    name: install_ibm_cert
