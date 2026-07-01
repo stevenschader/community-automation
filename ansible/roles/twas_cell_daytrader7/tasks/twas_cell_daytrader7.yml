@@ -39,8 +39,8 @@
     dest: "resource_scripts.py"
 - name: Copy daytrader app
   ansible.builtin.copy:
-   src: "{{ DefaultEarFile }}"
-   dest: "~/{{ DefaultEarFile }}"
+    src: "{{ DefaultEarFile }}"
+    dest: "~/{{ DefaultEarFile }}"
 
 - name: Run the daytrader config jython script
   ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
@@ -54,6 +54,6 @@
   ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
   register: daytrader7Output
   failed_when: ( daytrader7Output.rc not in [ 0, 255 ] )
-- name: daytrader7Output
+- name: Daytrader7Output
   ansible.builtin.debug:
     msg: "{{ daytrader7Output.stdout_lines }}"

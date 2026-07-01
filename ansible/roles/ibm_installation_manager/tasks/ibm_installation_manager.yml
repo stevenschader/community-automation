@@ -10,82 +10,83 @@
   changed_when: false
   failed_when: false
 
-- set_fact:
+- ansible.builtin.set_fact:
    archive_name_match: 'agent.installer.linux.gtk.x86_64_{{ im_archive_driver }}.zip'
   when:
-  - ansible_architecture == 'x86_64'
-  - ansible_system == 'Linux'
-- set_fact:
+    - ansible_architecture == 'x86_64'
+    - ansible_system == 'Linux'
+- ansible.builtin.set_fact:
     archive_name_match: 'agent.installer.linux.gtk.ppc64le_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'ppc64le'
   - ansible_system == 'Linux'
-- set_fact:
+- ansible.builtin.set_fact:
     archive_name_match: 'agent.installer.win32.win32.x86_64_{{ im_archive_driver }}.zip'
     cygwin: 'c:/cygwin64'
   when:
   - ansible_system == 'Windows' or 'CYG' in ansible_system
-- set_fact:
+- ansible.builtin.set_fact:
     archive_name_match: 'agent.installer.linux.gtk.s390x_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 's390x'
   - ansible_system == 'Linux'
-- set_fact:
+- ansible.builtin.set_fact:
     archive_name_match: 'agent.installer.aix.gtk.ppc64_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'chrp'
-- set_fact:
+- ansible.builtin.set_fact:
     archive_name_match: 'agent.installer.os400.motif.ppc_{{ im_archive_driver }}.zip'
   when:
   - ansible_system == 'OS400'
 
-- name: as400 softlinks
+- name: AS400 softlinks
   when: ansible_system == 'OS400'
   block:
-  - name: check if softlinks zip/unzip/zipinfo exist on as400
+  - name: Check if softlinks zip/unzip/zipinfo exist on as400
     ansible.builtin.stat:
      path: "/QOpenSys/usr/bin/zipinfo"
     register: issoftlinks
-  - name: softlink the zip/zipinfo/unzip into default path
+
+  - name: Softlink the zip/zipinfo/unzip into default path
     when: issoftlinks.stat.exists == False
     ansible.builtin.shell: |
-      ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo 
-      ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip 
+      ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo
+      ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip
       ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip
 
 - name: Temp im install dir
   ansible.builtin.file:
-   path: "{{ install_base }}/im_install"
-   state: directory
+    path: "{{ install_base }}/im_install"
+    state: directory
 
-- name: Clean up previous ibm_im_responsefile.xml 
+- name: Clean up previous ibm_im_responsefile.xml
   ansible.builtin.file:
     path: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
     state: absent
 
 - name: Copy ibm_im_responsefile.xml template
   ansible.builtin.template:
-   src: ibm_im_responsefile.xml.j2
-   dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
+    src: ibm_im_responsefile.xml.j2
+    dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
 - name: What is install_base set to
-  dansible.builtin.ebug:
-   msg: "{{ install_base }}"
+  ansible.builtin.debug:
+    msg: "{{ install_base }}"
 
 - name: Get im archive
   ansible.builtin.get_url:
-   url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: /tmp/im.zip
-   url_username: "{{ gsa_user }}"
-   url_password: "{{ gsa_pass }}"
-   mode: '0755'
-   validate_certs: false
+    url: "{{ im_archive }}/{{ archive_name_match }}"
+    dest: /tmp/im.zip
+    url_username: "{{ gsa_user }}"
+    url_password: "{{ gsa_pass }}"
+    mode: '0755'
+    validate_certs: false
 
 - name: Unarchive im.zip
   ansible.builtin.unarchive:
-   src: /tmp/im.zip
-   dest: "{{ install_base }}/im_install"
-   remote_src: true
+    src: /tmp/im.zip
+    dest: "{{ install_base }}/im_install"
+    remote_src: true
 
 - name: Clean up im.zip
   ansible.builtin.file:
@@ -102,7 +103,7 @@
 
 - name: Userinstc output
   ansible.builtin.debug:
-   msg: "{{ userinstcOutput.stdout_lines }}"
+    msg: "{{ userinstcOutput.stdout_lines }}"
 
 - name: Clean up im_install temp repo
   ansible.builtin.file:
