@@ -46,14 +46,19 @@
     msg: "cacerts keystore not found in {{ ibm_cert_jre_path }}"
   when: cacerts_find.matched == 0
 
+- name: Certificate cacerts location
+  ansible.builtin.debug:
+    msg:
+      - "cacert *nix path: {{ cacerts_path }}"
+      - "cacert win  path: {{ cacerts_path_win }}"
+
 - name: Check if certificate already exists in keystore
   ansible.builtin.command: >
-    {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
-    -storepass changeit -alias {{ ibm_cert_alias }}
+    {{ keytool_path }} -list -cacerts -storepass changeit -alias {{ ibm_cert_alias }}
   register: cert_check
   failed_when: false
   changed_when: false
-  no_log: true
+  no_log: false
 
 - name: Install IBM Digital Certs root certificate
   when: cert_check.rc != 0
@@ -90,14 +95,15 @@
 
     - name: Verify certificate installation
       ansible.builtin.command: >
-        {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
-        -storepass changeit -alias {{ ibm_cert_alias }}
+        {{ keytool_path }} -list -cacerts -storepass changeit -alias {{ ibm_cert_alias }}
       register: cert_verify
       changed_when: false
 
     - name: Certificate installation result
       ansible.builtin.debug:
-        msg: "IBM Digital Certs root certificate successfully installed"
+        msg:
+          - "IBM Digital Certs root certificate successfully installed"
+          - "Certificate alias: {{ ibm_cert_alias }}"
 
 - name: Certificate already installed
   ansible.builtin.debug:
