@@ -107,7 +107,9 @@
 
 - name: Certificate already installed
   ansible.builtin.debug:
-    msg: "IBM Digital Certs root certificate already exists in keystore"
+    msg:
+      - "IBM Digital Certs root certificate already exists in keystore"
+      - "{{ cert_check.stdout_lines }}"
   when: cert_check.rc == 0
 
 # Made with Bob
