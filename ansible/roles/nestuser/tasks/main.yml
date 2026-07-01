@@ -1,6 +1,28 @@
 ---
 
-- name: Ensure group exists
+- name: Check current group state (name and gid)
+  ansible.builtin.command: getent group {{ user_username }}
+  register: _group_entry
+  changed_when: false
+  failed_when: false
+  become: true
+
+# getent group output: groupname:password:gid:members
+- name: Parse existing group GID
+  ansible.builtin.set_fact:
+    _existing_gid: "{{ _group_entry.stdout.split(':')[2] | default('') }}"
+  when: _group_entry.rc == 0
+
+- name: Delete group if GID does not match desired value
+  ansible.builtin.group:
+    name: "{{ user_username }}"
+    state: absent
+  become: true
+  when:
+    - _group_entry.rc == 0
+    - _existing_gid | string != group_id | string
+
+- name: Ensure group exists with correct name and GID
   become: true
   ansible.builtin.group:
     name: "{{ user_username }}"
@@ -15,6 +37,29 @@
     user_shell: '/bin/ksh'
   when:
     - ansible_architecture == 'chrp'
+
+- name: Check current user state (name and uid)
+  ansible.builtin.command: getent passwd {{ user_username }}
+  register: _user_entry
+  changed_when: false
+  failed_when: false
+  become: true
+
+# getent passwd output: username:password:uid:gid:comment:home:shell
+- name: Parse existing user UID
+  ansible.builtin.set_fact:
+    _existing_uid: "{{ _user_entry.stdout.split(':')[2] | default('') }}"
+  when: _user_entry.rc == 0
+
+- name: Delete user if UID does not match desired value
+  ansible.builtin.user:
+    name: '{{ user_username }}'
+    state: absent
+    remove: false
+  become: true
+  when:
+    - _user_entry.rc == 0
+    - _existing_uid | string != user_id | string
 
 - name: Ensure User is Present
   become: true
