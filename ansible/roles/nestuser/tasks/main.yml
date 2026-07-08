@@ -7,6 +7,16 @@
   failed_when: false
   become: true
 
+
+- name: Delete conflicting group occupying desired GID
+  ansible.builtin.group:
+    name: "{{ _gid_owner.stdout | trim }}"
+    state: absent
+  become: true
+  when:
+    - _gid_owner.stdout | trim != ''
+    - _gid_owner.stdout | trim != user_username
+    
 # getent group output: groupname:password:gid:members
 - name: Parse existing group GID
   ansible.builtin.set_fact:
@@ -29,15 +39,6 @@
   changed_when: false
   failed_when: false
   become: true
-
-- name: Delete conflicting group occupying desired GID
-  ansible.builtin.group:
-    name: "{{ _gid_owner.stdout | trim }}"
-    state: absent
-  become: true
-  when:
-    - _gid_owner.stdout | trim != ''
-    - _gid_owner.stdout | trim != user_username
 
 - name: Ensure group exists with correct name and GID
   become: true
