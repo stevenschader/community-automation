@@ -45,7 +45,6 @@ im_appclient_package:
 im_twas_java_package: 'com.ibm.java.jdk.v8'
 im_twas_more_package:
   v10: com.ibm.websphere.MORE.v10
-  v20: com.ibm.websphere.MORE.v20
 
 verboseGC: true
 linux_process_to_kill: 'java'
