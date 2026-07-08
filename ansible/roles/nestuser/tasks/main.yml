@@ -7,16 +7,6 @@
   failed_when: false
   become: true
 
-
-- name: Delete conflicting group occupying desired GID
-  ansible.builtin.group:
-    name: "{{ _gid_owner.stdout | trim }}"
-    state: absent
-  become: true
-  when:
-    - _gid_owner.stdout | trim != ''
-    - _gid_owner.stdout | trim != user_username
-    
 # getent group output: groupname:password:gid:members
 - name: Parse existing group GID
   ansible.builtin.set_fact:
@@ -31,21 +21,6 @@
   when:
     - _group_entry.rc == 0
     - _existing_gid | string != group_id | string
-
-- name: Check if another group is already using the desired GID
-  ansible.builtin.shell: |
-    getent group | awk -F: '$3 == {{ group_id }} {print $1}'
-  register: _gid_owner
-  changed_when: false
-  failed_when: false
-  become: true
-
-- name: Ensure group exists with correct name and GID
-  become: true
-  ansible.builtin.group:
-    name: "{{ user_username }}"
-    gid: "{{ group_id }}"
-    state: present
 
 # AIX /usr/bin/bash
 # linux /bin/bash
@@ -96,6 +71,30 @@
   when:
     - _uid_owner.stdout | trim != ''
     - _uid_owner.stdout | trim != user_username
+
+- name: Check if another group is already using the desired GID
+  ansible.builtin.shell: |
+    getent group | awk -F: '$3 == {{ group_id }} {print $1}'
+  register: _gid_owner
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Delete conflicting group occupying desired GID
+  ansible.builtin.group:
+    name: "{{ _gid_owner.stdout | trim }}"
+    state: absent
+  become: true
+  when:
+    - _gid_owner.stdout | trim != ''
+    - _gid_owner.stdout | trim != user_username
+
+- name: Ensure group exists with correct name and GID
+  become: true
+  ansible.builtin.group:
+    name: "{{ user_username }}"
+    gid: "{{ group_id }}"
+    state: present
 
 - name: Ensure User is Present
   become: true
