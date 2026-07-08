@@ -47,7 +47,7 @@
 
 - name: Adjust -Xmx value in imcl.ini
   ansible.builtin.lineinfile:
-    path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl.ini"
+    path: "{{ install_base }}/IM/eclipse/tools/imcl.ini"
     regexp: '^-Xmx\d+m$'
     line: '-Xmx2048m'
   register: xmx_update
